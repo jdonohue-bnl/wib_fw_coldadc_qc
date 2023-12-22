@@ -400,18 +400,16 @@ module wib_top
     wire [8:0] accum_total_ch_sel             = `CONFIG_BITS(28, 1, 9); //0 to 511    
     wire [18:0] accum_num_samples             = `CONFIG_BITS(28, 10, 19); //1 to 262144
     
-    wire output_10mhz;
+    //wire output_10mhz;
     
     wire hist_trig                             = `CONFIG_BITS(29, 0, 1); // 0xA00C0074
-//    wire hist_wr                              = `CONFIG_BITS(29, 1, 1); 
-    // wire [13:0] hist_addr                            = `CONFIG_BITS(29, 2, 14);
     wire debug_sel                                  = `CONFIG_BITS(29, 16, 1);
     wire [8:0] hist_ch                             = `CONFIG_BITS(30, 0, 9); // 0xA00C0078
-    wire lemo0_sel                              = `CONFIG_BITS(30, 9, 1); //lemo 0 (P12)output        
+    //wire lemo0_sel                              = `CONFIG_BITS(30, 9, 1); //lemo 0 (P12)output        
     wire [31:0] hist_num_samples                = `CONFIG_BITS(31, 0, 32); // 0xA00C007C  
     
-    //assign lemo0 io to either 10mhz wire (default 0) or hist_trig (1) depending on value of lemo0_sel:
-    assign lemo_io_0 = lemo0_sel? hist_trig : output_10mhz; 
+    //////assign lemo0 io to either 10mhz wire (default 0) or hist_trig (1) depending on value of lemo0_sel:
+    //assign lemo_io_0 = lemo0_sel? hist_trig : output_10mhz; 
     ///////////////end added
     
     
@@ -645,11 +643,9 @@ module wib_top
     ts_fake_mmcm fake_endpoint
     (
         .clk_out1 (gen_clk),
-        .clk_out2 (gen_clk2x),     
-//////////JD BNL added:                
-//        .clk_out3 (lemo_io_0), // 10 Mhz clock      
-        .clk_out3 (output_10mhz),
-//////////end added  
+        .clk_out2 (gen_clk2x),                   
+        .clk_out3 (lemo_io_0), // 10 Mhz clock      
+        //.clk_out3 (output_10mhz),
         .reset    (1'b0),
         .locked   (),
         .clk_in1  (ts_rec_d_clk_pll)
@@ -955,11 +951,9 @@ module wib_top
         
         .ptc_busy    (),
         
-        .axi_clk     (axi_clk_out),
-//////////JD BNL added        
-//        .clk_10M     (lemo_io_0 ) // 10M clock from PS
-        .clk_10M     (output_10mhz)
-//////////end added    
+        .axi_clk     (axi_clk_out),       
+        .clk_10M     (lemo_io_0 ) // 10M clock from PS
+        //.clk_10M     (output_10mhz)
     );
     
     mon_adc_spi mon_adc
