@@ -394,6 +394,28 @@ module wib_top
 
     wire [20:0] cp_period     = `CONFIG_BITS(16,  0, 21); // 0xA00C0040  
     wire [26:0] cp_high_time  = `CONFIG_BITS(17,  0, 27); // 0xA00C0044 
+    
+    ///////////////JD BNL added
+    wire accum_trig                           = `CONFIG_BITS(28, 0, 1); // 0xA00C0070
+    wire [8:0] accum_total_ch_sel             = `CONFIG_BITS(28, 1, 9); //0 to 511    
+    wire [18:0] accum_num_samples             = `CONFIG_BITS(28, 10, 19); //1 to 262144
+    
+    wire output_10mhz;
+    
+    wire hist_trig                             = `CONFIG_BITS(29, 0, 1); // 0xA00C0074
+//    wire hist_wr                              = `CONFIG_BITS(29, 1, 1); 
+    // wire [13:0] hist_addr                            = `CONFIG_BITS(29, 2, 14);
+    wire debug_sel                                  = `CONFIG_BITS(29, 16, 1);
+    wire [8:0] hist_ch                             = `CONFIG_BITS(30, 0, 9); // 0xA00C0078
+    wire lemo0_sel                              = `CONFIG_BITS(30, 9, 1); //lemo 0 (P12)output        
+    wire [31:0] hist_num_samples                = `CONFIG_BITS(31, 0, 32); // 0xA00C007C  
+    
+    //assign lemo0 io to either 10mhz wire (default 0) or hist_trig (1) depending on value of lemo0_sel:
+    assign lemo_io_0 = lemo0_sel? hist_trig : output_10mhz; 
+    ///////////////end added
+    
+    
+    
 
     assign `STATUS_BITS( 0, 0,  2) = daq_spy_full[1:0];   // 0xA00C0080
     assign `STATUS_BITS( 0, 2,  1) = ps_locked;
@@ -457,7 +479,61 @@ module wib_top
     assign `STATUS_BITS(21,16, 16) = MEASURED_VCCINT;  // 0xA00C00D4
     assign `STATUS_BITS(22, 0, 16) = MEASURED_VCCAUX;  // 0xA00C00D8
     assign `STATUS_BITS(22,16, 16) = MEASURED_VCCBRAM; // 0xA00C00D8
-
+    
+	
+	
+	/////////////////JD BNL added
+	wire [31:0] hist_data_in;
+	wire [31:0] hist_data_out;
+	wire [14:0] hist_addr;
+	//wire [14:0] hist_rd_addr;
+	//wire hist_rd_strb;
+	//wire [14:0] hist_wr_addr;
+	wire [3:0] hist_wr_strb; //allows bytewise writes, but we don't need that	
+	wire hist_en;
+	wire hist_axi_clk;
+	
+	wire [7:0] accum_ready;
+//	wire hist_rst_busy;
+	wire [31:0] accum_ch_total;
+	wire [31:0] hist_out;
+	wire hist_ready;
+	reg [13:0] deframed_data_mon;
+	
+	
+    
+    assign `STATUS_BITS(28,0, 8) = accum_ready; // 0xA00C00F0
+//    assign `STATUS_BITS(28, 8, 1) = hist_rst_busy;   
+    assign `STATUS_BITS(28, 9, 1) = hist_ready; 
+    assign `STATUS_BITS(28,10, 14) = deframed_data_mon;    
+    assign `STATUS_BITS(29,0, 32) = accum_ch_total; // 0xA00C00F4
+    assign `STATUS_BITS(30, 0, 32) = hist_out; // 0xA00C00F8    
+//    assign `STATUS_BITS(30, 0, 32) = debug_sel ? 32'h12345678 : hist_out; // 0xA00C00F8    
+    //assign `STATUS_BITS(30, 0, 32) = 32'h12345678;
+    //assign `STATUS_BITS(23, 0, 32) = 32'h12345678; //0xA00C00DC
+    
+    wire [31:0] accum_total [15:0][31:0];
+    integer deframed_mon_state_id = hist_ch[8:6];
+    integer deframed_mon_link_id = hist_ch[8:5];
+    integer deframed_mon_ch_id = hist_ch[4:0];    
+    
+    integer accum_total_link_id = accum_total_ch_sel[8:5];
+    integer accum_total_ch_id = accum_total_ch_sel[4:0];
+    assign accum_ch_total = accum_total[accum_total_link_id][accum_total_ch_id];
+ 
+ 
+    wire [13:0] deframed_aligned [15:0][31:0]; // [link][sample]
+    wire [1:0] deframed_state [7:0];   
+    
+    always @(posedge axi_clk_out)
+        begin
+            if (deframed_state[deframed_mon_state_id][0] == 1'b1)
+                begin 
+                    deframed_data_mon = deframed_aligned[deframed_mon_link_id][deframed_mon_ch_id];
+                end
+        end
+    
+    /////////////////end added
 
     wire sfp_dis;
     
@@ -550,15 +626,30 @@ module wib_top
         .hermes_rxn         (gthrxn_int),
         .hermes_rxp         (gthrxp_int),
         .hermes_txn         (gthtxn_int),
-        .hermes_txp         (gthtxp_int)
+        .hermes_txp         (gthtxp_int),
+        
+//////////JD BNL added:    
+        .hist_data_in       (hist_data_in),
+        .hist_data_out      (hist_data_out),
+        .hist_addr          (hist_addr),
+        //.hist_rd_addr        (hist_rd_addr[12:0]), //high 2 bits of addr are 0, not needed
+       //.hist_rd_strb        (hist_rd_strb),
+       // .hist_wr_addr        (hist_wr_addr[12:0]), //high 2 bits of addr are 0, not needed
+        .hist_wr_strb       (hist_wr_strb),
+        .hist_en            (hist_en),
+        .hist_axi_clk       (hist_axi_clk)
+ //////////end BNL added               
     );
 
     // Generate fake output clock
     ts_fake_mmcm fake_endpoint
     (
         .clk_out1 (gen_clk),
-        .clk_out2 (gen_clk2x),             
-        .clk_out3 (lemo_io_0), // 10 Mhz clock             
+        .clk_out2 (gen_clk2x),     
+//////////JD BNL added:                
+//        .clk_out3 (lemo_io_0), // 10 Mhz clock      
+        .clk_out3 (output_10mhz),
+//////////end added  
         .reset    (1'b0),
         .locked   (),
         .clk_in1  (ts_rec_d_clk_pll)
@@ -663,6 +754,91 @@ module wib_top
         .flex                 (flex       ),
         .raw_channel_map      (raw_channel_map)
     );    
+   
+//JD BNL added    
+
+    frame_builder_modified fbld_modified
+    (
+        .deframed             (deframed),
+        .time8                (time8),
+        .time16               (time16),
+        .valid14              (valid14 ),
+        .valid12              (valid12 ),
+        .crc_err              (crc_err ),
+        .rxclk2x              (clk125),
+        .link_mask            (link_mask   ),           // this input allows to disable some links in case they are broken
+        
+//        .ddi_d                (ddi_d       ),
+//        .ddi_d_last           (ddi_d_last  ),
+//        .ddi_d_valid          (ddi_d_valid ),
+        .deframed_aligned     (deframed_aligned),
+        .deframed_state       (deframed_state),
+        
+        .ts_tstamp            (dts_time_delayed),       // delayed time stamp matching data
+        .ts_clk               (clk62p5  ),              // this is 62.5 M clock coming with time stamp
+        .reset                (fb_reset),
+        .fake_daq_stream      (fake_daq_stream),
+        .bp_crate_addr        (bp_crate_addr),
+        .bp_slot_addr         (bp_slot_addr & 4'b0111), // mask out unused high bit to make DAQ happy 
+        .si5344_lol           (~si5344_lol),
+        .link                 (link    ),
+        .crate_id             (crate_id),
+        .det_id               (det_id  ),
+        .femb_pulser_in_frame (femb_pulser_in_frame),
+        .context_fld          (context_fld), 
+        .ready                (ready      ), 
+        .psr_cal              (psr_cal    ), 
+        .ws                   (ws         ), 
+        .flex                 (flex       ),
+        .raw_channel_map      (raw_channel_map)
+    );
+    
+    accumulator accum
+    (
+        .clk                  (clk125),
+        .trigger              (accum_trig), 
+        .num_samples          (accum_num_samples),     
+        .deframed_aligned     (deframed_aligned),
+        .deframed_state       (deframed_state),
+        
+        .accum_ready          (accum_ready),
+        .total                (accum_total)
+    ); 
+ 
+    histogram hist
+    (
+        .clk                  (clk125),
+        .trigger              (hist_trig),
+        .num_samples          (hist_num_samples), 
+        .deframed_aligned     (deframed_aligned),
+        .deframed_state       (deframed_state),
+        .ch_to_analyze        (hist_ch),
+        
+        .axi_clk              (hist_axi_clk), 
+        .axi_en               (hist_en),
+        .axi_write            (hist_wr_strb),
+//        .axi_wr_addr          (hist_wr_addr),
+        .hist_rdout_addr      (hist_addr[14:2]),
+        .axi_din              (hist_data_out),
+        .axi_dout             (hist_data_in),
+		
+        .hist_ready           (hist_ready),
+        .hist_out             (hist_out) //not used
+        
+    );   
+ 
+//    blk_mem_gen_0 histogram_mem (
+//      .clka(clk62p5),            // input wire clka
+//      .rsta(hist_rst),            // input wire rsta
+//      .ena(1'b1),              // input wire ena
+//      .wea(hist_wr),              // input wire [0 : 0] wea
+//      .addra(hist_addr),          // input wire [13 : 0] addra
+//      .dina(hist_din),            // input wire [31 : 0] dina
+//      .douta(hist_dout),          // output wire [31 : 0] douta
+//      .rsta_busy(hist_rst_busy)  // output wire rsta_busy
+//    );
+
+//end JD BNL   
 
     timing_endpoint_dcsk timing_i
     (
@@ -780,7 +956,10 @@ module wib_top
         .ptc_busy    (),
         
         .axi_clk     (axi_clk_out),
-        .clk_10M     (lemo_io_0 ) // 10M clock from PS
+//////////JD BNL added        
+//        .clk_10M     (lemo_io_0 ) // 10M clock from PS
+        .clk_10M     (output_10mhz)
+//////////end added    
     );
     
     mon_adc_spi mon_adc

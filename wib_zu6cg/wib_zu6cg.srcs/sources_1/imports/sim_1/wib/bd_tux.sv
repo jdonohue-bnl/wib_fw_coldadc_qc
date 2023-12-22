@@ -68,7 +68,18 @@ module bd_tux
     input  [1:0] hermes_rxn,
     input  [1:0] hermes_rxp,
     output [1:0] hermes_txn,
-    output [1:0] hermes_txp
+    output [1:0] hermes_txp,
+//////////JD BNL added:    
+    input [31:0]    hist_data_in,
+    output [31:0]   hist_data_out,
+    output [14:0]   hist_addr,
+    //output [14:0]   hist_rd_addr,
+    //output          hist_rd_strb,
+    //output [14:0]   hist_wr_addr,
+    output [3:0]         hist_wr_strb,
+    output          hist_en,
+    output          hist_axi_clk
+//////////end BNL added        
 );
     
     design_1 design_1_i
@@ -193,8 +204,18 @@ module bd_tux
         .hermes1_rxn         (hermes_rxn[1]),
         .hermes1_rxp         (hermes_rxp[1]),
         .hermes1_txn         (hermes_txn[1]),
-        .hermes1_txp         (hermes_txp[1])
-        
+        .hermes1_txp         (hermes_txp[1]),
+//////////JD BNL added:     
+        .hist_data_in        (hist_data_in),
+        .hist_data_out       (hist_data_out),
+        .hist_addr             (hist_addr),
+        //.hist_rd_addr        (hist_rd_addr),
+        //.hist_rd_strb        (hist_rd_strb),
+        //.hist_wr_addr        (hist_wr_addr),
+        .hist_wr                (hist_wr_strb),
+        .hist_en                (hist_en),
+        .hist_axi_clk           (hist_axi_clk)									  
+//////////end BNL added                  
     );
 
 endmodule

@@ -1,0 +1,37 @@
+{
+   "ActiveEmotionalView":"Default View",
+   "Default View_ScaleFactor":"1.0",
+   "Default View_TopLeft":"-270,-186",
+   "ExpandedHierarchyInLayout":"",
+   "guistr":"# # String gsaved with Nlview 7.0r6  2020-01-29 bk=1.5227 VDI=41 GEI=36 GUI=JA:10.0 non-TLS-threadsafe
+#  -string -flagsOSRD
+preplace port S_AXI -pg 1 -lvl 0 -x -30 -y 110 -defaultsOSRD
+preplace port ddi0 -pg 1 -lvl 0 -x -30 -y 50 -defaultsOSRD
+preplace port port-id_AXI_CLK_OUT -pg 1 -lvl 0 -x -30 -y 130 -defaultsOSRD
+preplace port port-id_AXI_RSTn -pg 1 -lvl 0 -x -30 -y 150 -defaultsOSRD
+preplace port port-id_daq_clk -pg 1 -lvl 0 -x -30 -y 210 -defaultsOSRD
+preplace port port-id_daq_spy_full -pg 1 -lvl 3 -x 690 -y 110 -defaultsOSRD
+preplace port port-id_daq_spy_reset -pg 1 -lvl 0 -x -30 -y 250 -defaultsOSRD
+preplace port port-id_trigger -pg 1 -lvl 0 -x -30 -y 270 -defaultsOSRD
+preplace port port-id_ts_rst -pg 1 -lvl 0 -x -30 -y 230 -defaultsOSRD
+preplace portBus rec_time_0 -pg 1 -lvl 0 -x -30 -y 290 -defaultsOSRD
+preplace portBus spy_addr_0 -pg 1 -lvl 3 -x 690 -y 90 -defaultsOSRD
+preplace inst axi_bram_ctrl_0 -pg 1 -lvl 1 -x 150 -y 130 -defaultsOSRD
+preplace inst daq_spy_control_0 -pg 1 -lvl 2 -x 500 -y 110 -defaultsOSRD
+preplace netloc AXI_RSTn_1 1 0 1 NJ 150
+preplace netloc daq_clk_0_1 1 0 2 -10J 30 320J
+preplace netloc daq_spy_control_0_bram_addr_mon 1 2 1 NJ 90
+preplace netloc daq_spy_full_0 1 2 1 NJ 110
+preplace netloc rec_time_0_1 1 0 2 0J 260 320J
+preplace netloc reset_0_1 1 0 2 0J 20 310J
+preplace netloc trigger_1 1 0 2 NJ 270 300J
+preplace netloc ts_rst_1 1 0 2 10J 40 300J
+preplace netloc zynq_ultra_ps_e_0_pl_clk0 1 0 1 NJ 130
+preplace netloc Conn 1 0 2 NJ 50 NJ
+preplace netloc axi_bram_ctrl_0_BRAM_PORTA 1 1 1 290 70n
+preplace netloc ps8_0_axi_periph_M00_AXI 1 0 1 NJ 110
+levelinfo -pg 1 -30 150 500 690
+pagesize -pg 1 -db -bbox -sgen -190 -10 850 310
+"
+}
+
