@@ -3,62 +3,142 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="hist_tb_behav.wdb" id="1">
+      <db_ref path="single_ch_buffer_sim_behav.wdb" id="1">
          <top_modules>
             <top_module name="accum_typedef" />
             <top_module name="glbl" />
-            <top_module name="hist_tb" />
+            <top_module name="single_ch_buffer_sim" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="7.151 ns"></ZoomStartTime>
-      <ZoomEndTime time="80.852 ns"></ZoomEndTime>
-      <Cursor1Time time="32.000 ns"></Cursor1Time>
+      <ZoomStartTime time="6,709.110000 us"></ZoomStartTime>
+      <ZoomEndTime time="7,079.610001 us"></ZoomEndTime>
+      <Cursor1Time time="6,881.110000 us"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="219"></NameColumnWidth>
-      <ValueColumnWidth column_width="75"></ValueColumnWidth>
+      <ValueColumnWidth column_width="71"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="10" />
-   <wvobject fp_name="/hist_tb/clk" type="logic">
-      <obj_property name="ElementShortName">clk</obj_property>
-      <obj_property name="ObjectShortName">clk</obj_property>
+   <WVObjectSize size="30" />
+   <wvobject fp_name="/single_ch_buffer_sim/control" type="other">
+      <obj_property name="ElementShortName">control</obj_property>
+      <obj_property name="ObjectShortName">control</obj_property>
    </wvobject>
-   <wvobject fp_name="/hist_tb/trigger" type="logic">
-      <obj_property name="ElementShortName">trigger</obj_property>
-      <obj_property name="ObjectShortName">trigger</obj_property>
+   <wvobject fp_name="/single_ch_buffer_sim/hist_clk" type="logic">
+      <obj_property name="ElementShortName">hist_clk</obj_property>
+      <obj_property name="ObjectShortName">hist_clk</obj_property>
    </wvobject>
-   <wvobject fp_name="/hist_tb/hist_rdout_addr" type="array">
-      <obj_property name="ElementShortName">hist_rdout_addr[13:0]</obj_property>
-      <obj_property name="ObjectShortName">hist_rdout_addr[13:0]</obj_property>
+   <wvobject fp_name="/single_ch_buffer_sim/hist_trigger" type="logic">
+      <obj_property name="ElementShortName">hist_trigger</obj_property>
+      <obj_property name="ObjectShortName">hist_trigger</obj_property>
    </wvobject>
-   <wvobject fp_name="/hist_tb/hist_out" type="array">
+   <wvobject fp_name="/single_ch_buffer_sim/num_samples" type="array">
+      <obj_property name="ElementShortName">num_samples[31:0]</obj_property>
+      <obj_property name="ObjectShortName">num_samples[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/single_ch_buffer_sim/hist_ready" type="logic">
+      <obj_property name="ElementShortName">hist_ready</obj_property>
+      <obj_property name="ObjectShortName">hist_ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/single_ch_buffer_sim/hist_rdout_addr" type="array">
+      <obj_property name="ElementShortName">hist_rdout_addr[12:0]</obj_property>
+      <obj_property name="ObjectShortName">hist_rdout_addr[12:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/single_ch_buffer_sim/hist_out" type="array">
       <obj_property name="ElementShortName">hist_out[31:0]</obj_property>
       <obj_property name="ObjectShortName">hist_out[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/hist_tb/axi_clk" type="logic">
+   <wvobject fp_name="/single_ch_buffer_sim/ch_to_analyze" type="array">
+      <obj_property name="ElementShortName">ch_to_analyze[8:0]</obj_property>
+      <obj_property name="ObjectShortName">ch_to_analyze[8:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/single_ch_buffer_sim/deframed_aligned" type="array">
+      <obj_property name="ElementShortName">deframed_aligned[15:0][31:0][13:0]</obj_property>
+      <obj_property name="ObjectShortName">deframed_aligned[15:0][31:0][13:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/single_ch_buffer_sim/deframed_state" type="array">
+      <obj_property name="ElementShortName">deframed_state[7:0][1:0]</obj_property>
+      <obj_property name="ObjectShortName">deframed_state[7:0][1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/single_ch_buffer_sim/axi_clk" type="logic">
       <obj_property name="ElementShortName">axi_clk</obj_property>
       <obj_property name="ObjectShortName">axi_clk</obj_property>
    </wvobject>
-   <wvobject fp_name="/hist_tb/axi_write" type="logic">
-      <obj_property name="ElementShortName">axi_write</obj_property>
-      <obj_property name="ObjectShortName">axi_write</obj_property>
+   <wvobject fp_name="/single_ch_buffer_sim/axi_en" type="logic">
+      <obj_property name="ElementShortName">axi_en</obj_property>
+      <obj_property name="ObjectShortName">axi_en</obj_property>
    </wvobject>
-   <wvobject fp_name="/hist_tb/axi_wr_addr" type="array">
-      <obj_property name="ElementShortName">axi_wr_addr[13:0]</obj_property>
-      <obj_property name="ObjectShortName">axi_wr_addr[13:0]</obj_property>
+   <wvobject fp_name="/single_ch_buffer_sim/axi_write" type="array">
+      <obj_property name="ElementShortName">axi_write[3:0]</obj_property>
+      <obj_property name="ObjectShortName">axi_write[3:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/hist_tb/axi_din" type="array">
+   <wvobject fp_name="/single_ch_buffer_sim/axi_wr_addr" type="array">
+      <obj_property name="ElementShortName">axi_wr_addr[12:0]</obj_property>
+      <obj_property name="ObjectShortName">axi_wr_addr[12:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/single_ch_buffer_sim/axi_din" type="array">
       <obj_property name="ElementShortName">axi_din[31:0]</obj_property>
       <obj_property name="ObjectShortName">axi_din[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/hist_tb/axi_dout" type="array">
+   <wvobject fp_name="/single_ch_buffer_sim/axi_dout" type="array">
       <obj_property name="ElementShortName">axi_dout[31:0]</obj_property>
       <obj_property name="ObjectShortName">axi_dout[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/hist_tb/uut/hist_mem/addrb" type="array">
-      <obj_property name="ElementShortName">addrb[13:0]</obj_property>
-      <obj_property name="ObjectShortName">addrb[13:0]</obj_property>
+   <wvobject fp_name="/single_ch_buffer_sim/buf_en" type="logic">
+      <obj_property name="ElementShortName">buf_en</obj_property>
+      <obj_property name="ObjectShortName">buf_en</obj_property>
+   </wvobject>
+   <wvobject fp_name="/single_ch_buffer_sim/buf_write" type="array">
+      <obj_property name="ElementShortName">buf_write[3:0]</obj_property>
+      <obj_property name="ObjectShortName">buf_write[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/single_ch_buffer_sim/buf_addr" type="array">
+      <obj_property name="ElementShortName">buf_addr[12:0]</obj_property>
+      <obj_property name="ObjectShortName">buf_addr[12:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/single_ch_buffer_sim/buf_din" type="array">
+      <obj_property name="ElementShortName">buf_din[31:0]</obj_property>
+      <obj_property name="ObjectShortName">buf_din[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/single_ch_buffer_sim/buf_dout" type="array">
+      <obj_property name="ElementShortName">buf_dout[31:0]</obj_property>
+      <obj_property name="ObjectShortName">buf_dout[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/single_ch_buffer_sim/histaxi_en" type="logic">
+      <obj_property name="ElementShortName">histaxi_en</obj_property>
+      <obj_property name="ObjectShortName">histaxi_en</obj_property>
+   </wvobject>
+   <wvobject fp_name="/single_ch_buffer_sim/histaxi_write" type="array">
+      <obj_property name="ElementShortName">histaxi_write[3:0]</obj_property>
+      <obj_property name="ObjectShortName">histaxi_write[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/single_ch_buffer_sim/histaxi_addr" type="array">
+      <obj_property name="ElementShortName">histaxi_addr[12:0]</obj_property>
+      <obj_property name="ObjectShortName">histaxi_addr[12:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/single_ch_buffer_sim/histaxi_din" type="array">
+      <obj_property name="ElementShortName">histaxi_din[31:0]</obj_property>
+      <obj_property name="ObjectShortName">histaxi_din[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/single_ch_buffer_sim/histaxi_dout" type="array">
+      <obj_property name="ElementShortName">histaxi_dout[31:0]</obj_property>
+      <obj_property name="ObjectShortName">histaxi_dout[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/single_ch_buffer_sim/trigger" type="logic">
+      <obj_property name="ElementShortName">trigger</obj_property>
+      <obj_property name="ObjectShortName">trigger</obj_property>
+   </wvobject>
+   <wvobject fp_name="/single_ch_buffer_sim/done" type="logic">
+      <obj_property name="ElementShortName">done</obj_property>
+      <obj_property name="ObjectShortName">done</obj_property>
+   </wvobject>
+   <wvobject fp_name="/single_ch_buffer_sim/dut/state" type="other">
+      <obj_property name="ElementShortName">state</obj_property>
+      <obj_property name="ObjectShortName">state</obj_property>
+   </wvobject>
+   <wvobject fp_name="/single_ch_buffer_sim/ch_to_analyze" type="array">
+      <obj_property name="ElementShortName">ch_to_analyze[8:0]</obj_property>
+      <obj_property name="ObjectShortName">ch_to_analyze[8:0]</obj_property>
    </wvobject>
 </wave_config>

@@ -7,7 +7,7 @@
       "name": "design_1",
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
       "synth_flow_mode": "Hierarchical",
-      "tool_version": "2022.2",
+      "tool_version": "2022.2.2",
       "validated": "true"
     },
     "design_tree": {
@@ -150,9 +150,9 @@
           "daq_spy_control_0": ""
         }
       },
-      "tx_mux_wib_tux_0": "",
       "xlconcat_0": "",
-      "axi_bram_ctrl_0": ""
+      "axi_bram_ctrl_0": "",
+      "tx_mux_wib_tux_0": ""
     },
     "interface_ports": {
       "WIB_LED": {
@@ -11294,6 +11294,26 @@
           }
         }
       },
+      "xlconcat_0": {
+        "vlnv": "xilinx.com:ip:xlconcat:2.1",
+        "xci_name": "design_1_xlconcat_0_0",
+        "xci_path": "ip\\design_1_xlconcat_0_0\\design_1_xlconcat_0_0.xci",
+        "inst_hier_path": "xlconcat_0"
+      },
+      "axi_bram_ctrl_0": {
+        "vlnv": "xilinx.com:ip:axi_bram_ctrl:4.1",
+        "xci_name": "design_1_axi_bram_ctrl_0_9",
+        "xci_path": "ip\\design_1_axi_bram_ctrl_0_9\\design_1_axi_bram_ctrl_0_9.xci",
+        "inst_hier_path": "axi_bram_ctrl_0",
+        "parameters": {
+          "READ_LATENCY": {
+            "value": "2"
+          },
+          "SINGLE_PORT_BRAM": {
+            "value": "1"
+          }
+        }
+      },
       "tx_mux_wib_tux_0": {
         "vlnv": "xilinx.com:module_ref:tx_mux_wib_tux:1.0",
         "xci_name": "design_1_tx_mux_wib_tux_0_0",
@@ -11844,26 +11864,6 @@
             "direction": "I",
             "left": "63",
             "right": "0"
-          }
-        }
-      },
-      "xlconcat_0": {
-        "vlnv": "xilinx.com:ip:xlconcat:2.1",
-        "xci_name": "design_1_xlconcat_0_0",
-        "xci_path": "ip\\design_1_xlconcat_0_0\\design_1_xlconcat_0_0.xci",
-        "inst_hier_path": "xlconcat_0"
-      },
-      "axi_bram_ctrl_0": {
-        "vlnv": "xilinx.com:ip:axi_bram_ctrl:4.1",
-        "xci_name": "design_1_axi_bram_ctrl_0_9",
-        "xci_path": "ip\\design_1_axi_bram_ctrl_0_9\\design_1_axi_bram_ctrl_0_9.xci",
-        "inst_hier_path": "axi_bram_ctrl_0",
-        "parameters": {
-          "READ_LATENCY": {
-            "value": "2"
-          },
-          "SINGLE_PORT_BRAM": {
-            "value": "1"
           }
         }
       }
@@ -12508,9 +12508,9 @@
           "daq_spy_all/AXI_RSTn",
           "ps8_0_axi_periph/M16_ARESETN",
           "ps8_0_axi_periph/M17_ARESETN",
-          "tx_mux_wib_tux_0/S_AXI_ARESETN",
           "ps8_0_axi_periph/M18_ARESETN",
-          "axi_bram_ctrl_0/s_axi_aresetn"
+          "axi_bram_ctrl_0/s_axi_aresetn",
+          "tx_mux_wib_tux_0/S_AXI_ARESETN"
         ]
       },
       "sda_in_n_0_0_1": {
@@ -12615,9 +12615,9 @@
           "daq_spy_all/AXI_CLK_OUT",
           "ps8_0_axi_periph/M16_ACLK",
           "ps8_0_axi_periph/M17_ACLK",
-          "tx_mux_wib_tux_0/S_AXI_ACLK",
           "ps8_0_axi_periph/M18_ACLK",
-          "axi_bram_ctrl_0/s_axi_aclk"
+          "axi_bram_ctrl_0/s_axi_aclk",
+          "tx_mux_wib_tux_0/S_AXI_ACLK"
         ]
       },
       "zynq_ultra_ps_e_0_pl_clk1": {

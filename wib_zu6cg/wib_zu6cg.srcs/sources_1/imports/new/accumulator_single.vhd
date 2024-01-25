@@ -47,6 +47,7 @@ entity accumulator_single is
     --implement generic determining # of samples?
     port (
         clk : in std_logic;
+        reset : in std_logic; 
         trigger : in std_logic;
         deframed_aligned : in arraydata_alladcs(1 downto 0)(31 downto 0)(13 downto 0);  --input [13:0] deframed [NLINKS-1:0][31:0], // [link][sample] 
         deframed_state : in std_logic;
@@ -137,53 +138,58 @@ end process io;
 fsm: process(clk)
 begin
     if rising_edge(clk) then
-        case accum_state is
-            when IDLE =>
-                accum_enable <= '0';
-                total <= accum_totals;
-                samples_taken <= 0;
---                accum_totals_s <= accum_totals; -- last param subject to change; is currently shifted to the right by 11 to integer divide by 2048
---                link_loop: for link in 0 to 1 loop 
---                    channel_loop: for channel in 0 to 31 loop
-----                        --avg(link)(channel) <= div_by_2048(accum_totals(link)(channel));
---                          total(link)(channel) <= accum_totals(link)(channel);
---                    end loop channel_loop;
---                end loop link_loop;
-                
-                if trigger_s = '1' then                    
-                 accum_clear <= '1'; --clear accumulators
-                 samples_to_take <= num_samples;
-                 ready <= '0'; --clear ready flag
---                    accum_enable <= '1';
-                 accum_state <= ACCUMULATE;     
---                 accum_state <= WAIT_FOR_DATA;         
-                end if;
-            when ACCUMULATE =>
-                accum_clear <= '0'; 
-                if deframed_state = '1' then
-                    accum_enable <= '1';
-                    samples_taken <= samples_taken + 1;
-                    accum_state <= WAIT_FOR_DATA;
-                end if;
---                if rising_edge(deframed_state) then -- <- this might not work
-        
-            when WAIT_FOR_DATA =>
-                accum_clear <= '0';
-                accum_enable <= '0';
-                if samples_taken >= samples_to_take then 
-                    ready <= '1';
+        if reset = '1' then
+            accum_clear <= '1'; --clear accumulators
+            accum_state <= IDLE;            
+        else
+            case accum_state is
+                when IDLE =>
                     accum_enable <= '0';
-                    accum_state <= IDLE;                 
-                elsif deframed_state <= '0' then
-                    accum_state <= ACCUMULATE;
-                end if;                    
-                
+                    total <= accum_totals;
+                    samples_taken <= 0;
+    --                accum_totals_s <= accum_totals; -- last param subject to change; is currently shifted to the right by 11 to integer divide by 2048
+    --                link_loop: for link in 0 to 1 loop 
+    --                    channel_loop: for channel in 0 to 31 loop
+    ----                        --avg(link)(channel) <= div_by_2048(accum_totals(link)(channel));
+    --                          total(link)(channel) <= accum_totals(link)(channel);
+    --                    end loop channel_loop;
+    --                end loop link_loop;
                     
-
-                                      
---                end if;
-                
-        end case;
+                    if trigger_s = '1' then                    
+                     accum_clear <= '1'; --clear accumulators
+                     samples_to_take <= num_samples;
+                     ready <= '0'; --clear ready flag
+    --                    accum_enable <= '1';
+                     accum_state <= ACCUMULATE;     
+    --                 accum_state <= WAIT_FOR_DATA;         
+                    end if;
+                when ACCUMULATE =>
+                    accum_clear <= '0'; 
+                    if deframed_state = '1' then
+                        accum_enable <= '1';
+                        samples_taken <= samples_taken + 1;
+                        accum_state <= WAIT_FOR_DATA;
+                    end if;
+    --                if rising_edge(deframed_state) then -- <- this might not work
+            
+                when WAIT_FOR_DATA =>
+                    accum_clear <= '0';
+                    accum_enable <= '0';
+                    if samples_taken >= samples_to_take then 
+                        ready <= '1';
+                        accum_enable <= '0';
+                        accum_state <= IDLE;                 
+                    elsif deframed_state <= '0' then
+                        accum_state <= ACCUMULATE;
+                    end if;                    
+                    
+                        
+    
+                                          
+    --                end if;
+                    
+            end case;
+        end if;
     end if;
 end process fsm;
 

@@ -8,6 +8,7 @@ use work.accum_typedef.all;
 entity accumulator is
     port (
         clk : in std_logic;
+        reset : in std_logic; 
         trigger: in std_logic;
         num_samples : in integer range 1 to 262144;
         deframed_aligned :  in arraydata_alladcs(15 downto 0)(31 downto 0)(13 downto 0);
@@ -33,6 +34,7 @@ type arr64x8 is array(7 downto 0) of std_logic_vector(63 downto 0);
 component accumulator_single is
     port (
         clk : in std_logic;
+        reset : in std_logic; 
         trigger : in std_logic;
         deframed_aligned : in arraydata_alladcs(1 downto 0)(31 downto 0)(13 downto 0);
         deframed_state : in std_logic;
@@ -54,6 +56,7 @@ begin
     accum_single : entity work.accumulator_single
         port map(
             clk => clk,
+            reset => reset,            
             trigger => trigger,
             deframed_aligned => deframed_aligned(i*2+1 downto i*2),
 --                deframed_aligned_link0 => deframed_aligned(i*2),

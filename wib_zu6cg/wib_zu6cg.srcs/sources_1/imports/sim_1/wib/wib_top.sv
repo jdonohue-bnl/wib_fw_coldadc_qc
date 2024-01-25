@@ -401,12 +401,18 @@ module wib_top
     wire [18:0] accum_num_samples             = `CONFIG_BITS(28, 10, 19); //1 to 262144
     
     //wire output_10mhz;
-    
-    wire hist_trig                             = `CONFIG_BITS(29, 0, 1); // 0xA00C0074
-    wire debug_sel                                  = `CONFIG_BITS(29, 16, 1);
+    wire hist_trig, buf_trig;
+    wire hist_buf_trig                             = `CONFIG_BITS(29, 0, 1); // 0xA00C0074 --triggers histogram or single ch buffer depending on hist_buf_sel
+//    wire debug_sel                                  = `CONFIG_BITS(29, 16, 1);
+    wire hist_buf_sel                              = `CONFIG_BITS(29, 1, 1); 
+    assign hist_trig = hist_buf_sel? 1'b0 : hist_buf_trig;
+    assign buf_trig = hist_buf_sel? hist_buf_trig: 1'b0;
+        
     wire [8:0] hist_ch                             = `CONFIG_BITS(30, 0, 9); // 0xA00C0078
     //wire lemo0_sel                              = `CONFIG_BITS(30, 9, 1); //lemo 0 (P12)output        
     wire [31:0] hist_num_samples                = `CONFIG_BITS(31, 0, 32); // 0xA00C007C  
+    
+    
     
     //////assign lemo0 io to either 10mhz wire (default 0) or hist_trig (1) depending on value of lemo0_sel:
     //assign lemo_io_0 = lemo0_sel? hist_trig : output_10mhz; 
@@ -483,13 +489,21 @@ module wib_top
 	/////////////////JD BNL added
 	wire [31:0] hist_data_in;
 	wire [31:0] hist_data_out;
-	wire [14:0] hist_addr;
+	wire [12:0] hist_addr;
 	//wire [14:0] hist_rd_addr;
 	//wire hist_rd_strb;
 	//wire [14:0] hist_wr_addr;
 	wire [3:0] hist_wr_strb; //allows bytewise writes, but we don't need that	
 	wire hist_en;
 	wire hist_axi_clk;
+	
+	wire [31:0] bram_data_in;
+	wire [31:0] bram_data_out;
+	wire [14:0] bram_addr;
+	wire [3:0] bram_wr_strb;
+	wire bram_en;
+	
+
 	
 	wire [7:0] accum_ready;
 //	wire hist_rst_busy;
@@ -498,10 +512,27 @@ module wib_top
 	wire hist_ready;
 	reg [13:0] deframed_data_mon;
 	
+	wire buf_mem_en;
+	wire [3:0] buf_mem_write;
+	wire [12:0] buf_mem_addr;
+	wire [31:0] buf_mem_din;
+	wire [31:0] buf_mem_dout;
+	wire buf_done;
 	
+	//MUX for bram r/w signals
+	assign hist_en = hist_buf_sel? buf_mem_en : bram_en;
+	assign hist_wr_strb = hist_buf_sel? buf_mem_write :  bram_wr_strb;
+	assign hist_addr = hist_buf_sel? buf_mem_addr : bram_addr[14:2];
+	assign hist_data_in = hist_buf_sel? buf_mem_din : bram_data_in;
+	
+	assign buf_mem_dout = hist_buf_sel? hist_data_out : 32'h00000000;
+	assign bram_data_out = hist_buf_sel? 32'h00000000 : hist_data_out;
+	
+		
     
     assign `STATUS_BITS(28,0, 8) = accum_ready; // 0xA00C00F0
-//    assign `STATUS_BITS(28, 8, 1) = hist_rst_busy;   
+//    assign `STATUS_BITS(28, 8, 1) = hist_rst_busy; 
+    assign `STATUS_BITS(28,8, 1) = buf_done;  
     assign `STATUS_BITS(28, 9, 1) = hist_ready; 
     assign `STATUS_BITS(28,10, 14) = deframed_data_mon;    
     assign `STATUS_BITS(29,0, 32) = accum_ch_total; // 0xA00C00F4
@@ -627,14 +658,14 @@ module wib_top
         .hermes_txp         (gthtxp_int),
         
 //////////JD BNL added:    
-        .hist_data_in       (hist_data_in),
-        .hist_data_out      (hist_data_out),
-        .hist_addr          (hist_addr),
+        .hist_data_in       (bram_data_out),
+        .hist_data_out      (bram_data_in),
+        .hist_addr          (bram_addr),
         //.hist_rd_addr        (hist_rd_addr[12:0]), //high 2 bits of addr are 0, not needed
        //.hist_rd_strb        (hist_rd_strb),
        // .hist_wr_addr        (hist_wr_addr[12:0]), //high 2 bits of addr are 0, not needed
-        .hist_wr_strb       (hist_wr_strb),
-        .hist_en            (hist_en),
+        .hist_wr_strb       (bram_wr_strb),
+        .hist_en            (bram_en),
         .hist_axi_clk       (hist_axi_clk)
  //////////end BNL added               
     );
@@ -792,6 +823,7 @@ module wib_top
     accumulator accum
     (
         .clk                  (clk125),
+		.reset                (fb_reset),								 
         .trigger              (accum_trig), 
         .num_samples          (accum_num_samples),     
         .deframed_aligned     (deframed_aligned),
@@ -804,6 +836,7 @@ module wib_top
     histogram hist
     (
         .clk                  (clk125),
+		.reset                (fb_reset),								 
         .trigger              (hist_trig),
         .num_samples          (hist_num_samples), 
         .deframed_aligned     (deframed_aligned),
@@ -814,13 +847,31 @@ module wib_top
         .axi_en               (hist_en),
         .axi_write            (hist_wr_strb),
 //        .axi_wr_addr          (hist_wr_addr),
-        .hist_rdout_addr      (hist_addr[14:2]),
-        .axi_din              (hist_data_out),
-        .axi_dout             (hist_data_in),
+        .hist_rdout_addr      (hist_addr),
+        .axi_din              (hist_data_in),
+        .axi_dout             (hist_data_out),
 		
         .hist_ready           (hist_ready),
         .hist_out             (hist_out) //not used
         
+    );
+    
+    single_ch_buffer single_buf
+    (
+        .axi_clk            (hist_axi_clk),
+		.reset              (fb_reset),							   
+        .trigger            (buf_trig),
+        .deframed_aligned     (deframed_aligned),
+        .deframed_state       (deframed_state),
+        .ch_to_analyze        (hist_ch),
+        
+        .mem_en             (buf_mem_en),
+        .mem_write          (buf_mem_write),
+        .mem_addr           (buf_mem_addr),
+        .mem_din            (buf_mem_din),
+        .mem_dout           (buf_mem_dout),
+        
+        .done               (buf_done)        
     );   
  
 //    blk_mem_gen_0 histogram_mem (
